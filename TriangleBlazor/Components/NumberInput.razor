@@ -1,0 +1,25 @@
+﻿<label for="@Id">@InputName</label>
+<input id="@Id" type="number" min="0" @bind-value="@Value" />
+
+@code {
+    [Parameter]
+    public string InputName { get; set; }
+
+    private Guid Id = @Guid.NewGuid();
+
+    private int _value;
+
+    [Parameter]
+    public int Value {
+        get => _value;
+        set
+        {
+            if (_value == value) return;
+            _value = value;
+            ValueChanged.InvokeAsync(value);
+        }
+    }
+
+    [Parameter]
+    public EventCallback<int> ValueChanged { get; set; }
+}

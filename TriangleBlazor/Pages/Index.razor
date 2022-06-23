@@ -2,8 +2,38 @@
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
 
-Welcome to your new app.
+<NumberInput InputName="Side A" @bind-Value="@triangle.SideA"/>
+<NumberInput InputName="Side B" @bind-Value="@triangle.SideB"/>
+<NumberInput InputName="Side C" @bind-Value="@triangle.SideC"/>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+
+<p>@triangle.SideA</p>
+<p>@triangle.SideB</p>
+<p>@triangle.SideC</p>
+
+<button @onclick="Submit">Submit</button>
+<p>@IsValidated</p>
+<p>@TriangleClass</p>
+
+
+<!-- <p>When input is change, this function gets recalled: @triangle.IsValid()</p> -->
+
+@code {
+    // define sides of a triangle
+    public Triangle triangle = new();
+
+    public bool IsValidated = false;
+    // show result by data-binding
+    public string TriangleClass = "";
+
+    void Submit()
+    {
+        IsValidated = triangle.IsValid();
+
+        // All sides have been validated
+    }
+
+    // Determine if it's a valid triangle
+    bool ValidateSides(int a, int b, int c) => a + b > c;
+}
