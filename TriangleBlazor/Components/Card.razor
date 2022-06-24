@@ -1,0 +1,56 @@
+﻿<div class="card @Style mb-4 text-center" style="margin-top:2rem;">
+  <div class="card-header">@CardHeader</div>
+  <div class="card-body">
+    <h5 class="card-title">@CardTitle</h5>
+    <p class="card-text">@CardContent</p>
+  </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public string CardType { get; set; }
+
+    private string Style = "";
+
+    protected override void OnInitialized()
+    {
+        Style = "text-white";
+        switch(CardType)
+        {
+            case "primary":
+                Style += " bg-primary";
+                break;
+            case "secondary":
+                Style += " bg-secondary";
+                break;
+            case "success":
+                Style += " bg-success";
+                break;
+            case "danger":
+                Style += " bg-danger";
+                break;
+            case "warning":
+                Style += " bg-warning";
+                break;
+            case "info":
+                Style += " bg-info";
+                break;
+            case "light":
+                Style = "bg-light";
+                break;
+            case "dark":
+                Style += " bg-dark";
+                break;
+        }
+    }
+
+    [Parameter]
+    public RenderFragment CardHeader { get; set; }
+
+    [Parameter]
+    public RenderFragment CardTitle { get; set; }
+
+    [Parameter]
+    public RenderFragment CardContent { get; set; }
+}

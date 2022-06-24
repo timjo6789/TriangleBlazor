@@ -1,39 +1,83 @@
 ﻿@page "/"
 
 <PageTitle>Index</PageTitle>
+<div class="text-center">
+    <NumberInput InputName="Side A" @bind-Value="@triangle.SideA"/>
+    <NumberInput InputName="Side B" @bind-Value="@triangle.SideB"/>
+    <NumberInput InputName="Side C" @bind-Value="@triangle.SideC"/>
+</div>
+
+<button @onclick="Submit" type="button" class="btn btn-primary form-control" style="margin-top: 1rem;">Submit</button>
 
 
-<NumberInput InputName="Side A" @bind-Value="@triangle.SideA"/>
-<NumberInput InputName="Side B" @bind-Value="@triangle.SideB"/>
-<NumberInput InputName="Side C" @bind-Value="@triangle.SideC"/>
-
-
-<p>@triangle.SideA</p>
-<p>@triangle.SideB</p>
-<p>@triangle.SideC</p>
-
-<button @onclick="Submit">Submit</button>
-<p>@IsValidated</p>
-<p>@TriangleClass</p>
-
+<div class="form-group">
+@if(IsValidated)
+{
+    <Output triangle=@staticTriangle />
+}
+else if (!FirstTime)
+{
+    <Card CardType="danger">
+        <CardHeader>Output</CardHeader>
+        <CardTitle>Failed Validation</CardTitle>
+        <CardContent>
+            @foreach(string error in ErrorMessages)
+            {
+                <p>@error</p>
+            }
+        </CardContent>
+    </Card>
+}
+else
+{
+    
+}
+</div>
 
 <!-- <p>When input is change, this function gets recalled: @triangle.IsValid()</p> -->
 
 @code {
     // define sides of a triangle
     public Triangle triangle = new();
+    public Triangle staticTriangle = new();
 
     public bool IsValidated = false;
-    // show result by data-binding
-    public string TriangleClass = "";
+    public bool FirstTime = true;
+
+    public List<string> ErrorMessages = new();
 
     void Submit()
     {
-        IsValidated = triangle.IsValid();
+        staticTriangle.SideA = triangle.SideA;
+        staticTriangle.SideB = triangle.SideB;
+        staticTriangle.SideC = triangle.SideC;
+        staticTriangle.CalculateDegrees();
 
-        // All sides have been validated
+        FirstTime = false;
+
+        // this will auto-update the if statement on the page
+        IsValidated = triangle.IsValid();
+        ErrorMessages.Clear();
+
+        // if it fails the validation, then show the errors
+        if(!IsValidated)
+        {
+            if (!triangle.IsAB_C())
+            {
+                ErrorMessages.Add(GenerateError("A", staticTriangle.SideA, "B", staticTriangle.SideB, "C", staticTriangle.SideC));
+            }
+
+            if (!triangle.IsAC_B())
+            {
+                ErrorMessages.Add(GenerateError("A", staticTriangle.SideA, "C", staticTriangle.SideC, "B", staticTriangle.SideB));
+            }
+
+            if (!triangle.IsBC_A())
+            {
+                ErrorMessages.Add(GenerateError("B", staticTriangle.SideB, "C", staticTriangle.SideC, "A", staticTriangle.SideA));
+            }
+        }
     }
 
-    // Determine if it's a valid triangle
-    bool ValidateSides(int a, int b, int c) => a + b > c;
+    public string GenerateError(string SideA, int A, string SideB, int B, string SideC, int C) => $"Side {SideA} ({A}) and Side {SideB} ({B}) is not greater than Side {SideC} ({C})";
 }
