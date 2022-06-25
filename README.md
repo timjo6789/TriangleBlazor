@@ -12,6 +12,10 @@ Since it's in blazor, there is no need for JavaScript. This reduces the need to 
 
 It is done in C# instead of JavaScript.
 
+This shows the ability to have backend code work with frontend on the same page with `@page "/"` controller. This simplifies the workflow.
+
+It's also where all the components gets use to generate the layout and the form for triangle app.
+
 
 ## [Components](https://github.com/timjo6789/TriangleBlazor/tree/master/TriangleBlazor/Components)
 This is what enables the program to act more like React or Vue.js by making components in .razor files
