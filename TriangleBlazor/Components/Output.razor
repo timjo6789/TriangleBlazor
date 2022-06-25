@@ -1,25 +1,16 @@
 ﻿<Card CardType="light">
-    <CardHeader>@angle @side Triangle</CardHeader>
-    <CardTitle>Valid @angle triangle</CardTitle>
+    <CardHeader>@triangle.CurrentAngleType() @triangle.CurrentSideType() Triangle</CardHeader>
+    <CardTitle>Valid @triangle.CurrentAngleType() triangle</CardTitle>
     <CardContent>
-        <p>The angle is @angle Angle.</p>
-        <p>The side is @side Side.</p>
-        <p>Angle A is @triangle.AngleA</p>
-        <p>Angle B is @triangle.AngleB</p>
-        <p>Angle C is @triangle.AngleC</p>
+        <p>The angle is @triangle.CurrentAngleType() Angle.</p>
+        <p>The side is @triangle.CurrentSideType() Side.</p>
+        <p>Angle A is @triangle.AngleA°</p>
+        <p>Angle B is @triangle.AngleB°</p>
+        <p>Angle C is @triangle.AngleC°</p>
     </CardContent>
 </Card>
 
 @code {
     [Parameter]
     public Triangle triangle { get; set; }
-
-    private string angle;
-    private string side;
-
-    protected override void OnInitialized()
-    {
-        angle = triangle.CurrentAngleType();
-        side = triangle.CurrentSideType();
-    }
 }

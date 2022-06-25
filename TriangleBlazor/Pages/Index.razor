@@ -11,49 +11,50 @@
 
 
 <div class="form-group">
-@if(IsValidated)
-{
-    <Output triangle=@staticTriangle />
-}
-else if (!FirstTime)
-{
-    <Card CardType="danger">
-        <CardHeader>Output</CardHeader>
-        <CardTitle>Failed Validation</CardTitle>
-        <CardContent>
-            @foreach(string error in ErrorMessages)
-            {
-                <p>@error</p>
-            }
-        </CardContent>
-    </Card>
-}
-else
-{
-    
-}
+    @if(IsValidated)
+    {
+        <Output triangle=@staticTriangle />
+    }
+    // prevents error messages from showing up before submit is clicked first time
+    else if (!FirstTime)
+    {
+        <Card CardType="danger">
+            <CardHeader>Output</CardHeader>
+            <CardTitle>Failed Validation</CardTitle>
+            <CardContent>
+                @foreach(string error in ErrorMessages)
+                {
+                    <p>@error</p>
+                }
+            </CardContent>
+        </Card>
+    }
 </div>
 
-<!-- <p>When input is change, this function gets recalled: @triangle.IsValid()</p> -->
-
 @code {
-    // define sides of a triangle
+    // dynamic from NumberInput component
     public Triangle triangle = new();
+
+    // static for outputs (that way submit can update it)
     public Triangle staticTriangle = new();
 
     public bool IsValidated = false;
     public bool FirstTime = true;
 
+    // list for any input errors
     public List<string> ErrorMessages = new();
 
     void Submit()
     {
+        // update the static values
+        triangle.CalculateDegrees();
+
         staticTriangle.SideA = triangle.SideA;
         staticTriangle.SideB = triangle.SideB;
         staticTriangle.SideC = triangle.SideC;
         staticTriangle.CalculateDegrees();
 
-        FirstTime = false;
+        FirstTime = false; // show any errors since user clicked submit
 
         // this will auto-update the if statement on the page
         IsValidated = triangle.IsValid();
@@ -62,22 +63,45 @@ else
         // if it fails the validation, then show the errors
         if(!IsValidated)
         {
-            if (!triangle.IsAB_C())
+            // show invalid messages for any number <= 0
+            if(triangle.SideA <= 0)
             {
-                ErrorMessages.Add(GenerateError("A", staticTriangle.SideA, "B", staticTriangle.SideB, "C", staticTriangle.SideC));
+                ErrorMessages.Add(SideError("A", triangle.SideA));
             }
 
-            if (!triangle.IsAC_B())
+            if(triangle.SideB <= 0)
             {
-                ErrorMessages.Add(GenerateError("A", staticTriangle.SideA, "C", staticTriangle.SideC, "B", staticTriangle.SideB));
+                ErrorMessages.Add(SideError("B", triangle.SideB));
             }
 
-            if (!triangle.IsBC_A())
+            if(triangle.SideC <= 0)
             {
-                ErrorMessages.Add(GenerateError("B", staticTriangle.SideB, "C", staticTriangle.SideC, "A", staticTriangle.SideA));
+                ErrorMessages.Add(SideError("C", triangle.SideC));
             }
+
+            // once validated, then show any errors for invalid sides
+            if(ErrorMessages.Count() == 0)
+            {
+                if (!triangle.IsAB_C())
+                {
+                    ErrorMessages.Add(InvalidError("A", staticTriangle.SideA, "B", staticTriangle.SideB, "C", staticTriangle.SideC));
+                }
+
+                if (!triangle.IsAC_B())
+                {
+                    ErrorMessages.Add(InvalidError("A", staticTriangle.SideA, "C", staticTriangle.SideC, "B", staticTriangle.SideB));
+                }
+
+                if (!triangle.IsBC_A())
+                {
+                    ErrorMessages.Add(InvalidError("B", staticTriangle.SideB, "C", staticTriangle.SideC, "A", staticTriangle.SideA));
+                }
+            }
+
         }
     }
 
-    public string GenerateError(string SideA, int A, string SideB, int B, string SideC, int C) => $"Side {SideA} ({A}) and Side {SideB} ({B}) is not greater than Side {SideC} ({C})";
+    // consolidate errors into single message (for maintainability)
+    public string SideError(string Side, double Number) => $"Side {Side} ({Number}) must be greater than 0";
+    public string InvalidError(string SideA, double A, string SideB, double B, string SideC, double C) => $"The sum of Side {SideA} ({A}) and Side {SideB} ({B}) is not greater than Side {SideC} ({C})";
 }

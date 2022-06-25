@@ -1,25 +1,30 @@
 ﻿<label for="@Id">@InputName</label>
-<input class="form-control" style="text-align:center;" id="@Id" type="number" min="0" @bind-value="@Value"/>
+<input class="form-control" style="text-align:center;" id="@Id" type="number" min="0.01" step="0.01" max="10000000000000" @bind-value="@Value"/>
 
 @code {
     [Parameter]
-    public string InputName { get; set; }
+    public string InputName { get; set; } = "No input name";
 
     private Guid Id = @Guid.NewGuid();
 
-    private int _value;
+    private double _value;
 
+    // databinds a triangle side to this (enables a variable pass-through and real time bind to triangle)
     [Parameter]
-    public int Value {
+    public double Value {
         get => _value;
         set
         {
+            // value is a javascript value (not C#) but can be used with C# functions
             if (_value == value) return;
+            value = Math.Round(value, 2, MidpointRounding.AwayFromZero);
+            if (value < 0) value = 0.01;
+            if (value >= 10000000000000) value = 10000000000000; // javascript number with decimal before it breaks down
             _value = value;
             ValueChanged.InvokeAsync(value);
         }
     }
 
     [Parameter]
-    public EventCallback<int> ValueChanged { get; set; }
+    public EventCallback<double> ValueChanged { get; set; }
 }
